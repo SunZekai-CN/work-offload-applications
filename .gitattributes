@@ -1,0 +1,1 @@
+nice-slam/pretrained/middle_fine.pt filter=lfs diff=lfs merge=lfs -text
