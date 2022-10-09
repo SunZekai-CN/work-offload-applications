@@ -974,7 +974,7 @@ int main(int argc, char *argv[]){
 
     std::cout << argc << "\n";
  
-    std::cout << alpha << " and " << argv[0] << " and " << argv[1] << "\n";
+    // std::cout << alpha << " and " << argv[0] << " and " << argv[1] << "\n";
     int reward_type = get_reward_type(prob_type);
     std::cout << "Reward type: " << reward_type << "\n";
 
@@ -1020,8 +1020,8 @@ int main(int argc, char *argv[]){
     
 
     // make directory for storing output data from this file
-    make_dir(op_Fname_upto_prob_name);
-    make_dir(op_FnamePfx);
+    // make_dir(op_Fname_upto_prob_name);
+    // make_dir(op_FnamePfx);
 
     auto start_build_only = high_resolution_clock::now();
 
@@ -1171,6 +1171,7 @@ int main(int argc, char *argv[]){
     auto duration_t = duration_cast<microseconds>(end - start);
 
     //IMP: Run time loop till nt-1. There ar no S2s to S1s in the last timestep
+    std::ofstream each_time("each_excuteTime.txt");
     for(int t = 0; t < nt-1; t++){
         std::cout << "*** Computing data for timestep, T = " << t << std::endl;
         D_tdummy[0] = t;
@@ -1194,8 +1195,9 @@ int main(int argc, char *argv[]){
         std::cout << "duration@t = "<< duration_t.count()/1e6 << "sec" << std::endl;
         std::cout << 3*H_Aarr_of_cooS1[0].size()*4*1e-6 << " MB" << std::endl;
         std::cout << std::endl << std::endl;
+        each_time << duration_t.count()/1e6 << "\n";
     }
-
+    each_time.close();
 
     // fill R vectors of each action for the last time step with high negative values. 
     // this has to be done seaprately because the above loop runs till nt-1.
