@@ -34,11 +34,11 @@ obs_width = int(0.1*final_gsize)
 obs_width_X = 16
 obs_width_Y = 2
 obs_speed = [4.8, 0]
-mode = 'static'
-dyn_obs_data = [obs_upper_row, obs_left_col, obs_width, obs_width_X, obs_width_Y, obs_speed, mode]
-build_environment_DG_with_westward_clouds(init_gsize, nt, dt, dxy, A, A_sc, eps,
-                                                op_nrzns, n_wsamples, w_range, wx,  
-                                                interpolate_degree, n_modes, dyn_obstacle_data = dyn_obs_data)
+# mode = 'static'
+# dyn_obs_data = [obs_upper_row, obs_left_col, obs_width, obs_width_X, obs_width_Y, obs_speed, mode]
+# build_environment_DG_with_westward_clouds(init_gsize, nt, dt, dxy, A, A_sc, eps,
+#                                                 op_nrzns, n_wsamples, w_range, wx,  
+#                                                 interpolate_degree, n_modes, dyn_obstacle_data = dyn_obs_data)
 mode = 'multiple_dynamic_2row'
 dyn_obs_data = [obs_upper_row, obs_left_col, obs_width, obs_width_X, obs_width_Y, obs_speed, mode]
 build_scalar_fields(init_gsize, interpolate_degree, nt, dt, dxy, A_sc, eps,
