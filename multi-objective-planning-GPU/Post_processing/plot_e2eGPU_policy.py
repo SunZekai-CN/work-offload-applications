@@ -984,7 +984,7 @@ def write_log(metric_data, prob_list, design_param, build_time, spvi_time, plot_
     time_list = [build_time, spvi_time, plot_time, data_time, build_time_only]
     row = prob_list + list2 + design_param + time_list
 
-    with open('/gdata1/rohitc/e2e_GPU_DP/src/log.csv', 'a') as f_object:
+    with open('/work/src/log.csv', 'a') as f_object:
         writer_object = csv.writer(f_object)
         writer_object.writerow(row)
         f_object.close()

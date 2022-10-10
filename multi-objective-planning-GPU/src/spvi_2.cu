@@ -793,11 +793,12 @@ int main(){
     // get_mdp_model_test();
     auto start = high_resolution_clock::now(); 
         get_mdp_model(model_data_path);
-        printf("mdp model laoded\n");
-
+        printf("mdp model loaded\n");
+    auto start2 = high_resolution_clock::now(); 
         solver_spvi_solve(p_out_policy_vec, p_out_value_func_vec,  max_solver_time_s);
     auto end = high_resolution_clock::now(); 
     auto duration_t = duration_cast<microseconds>(end - start);
+    auto duration_t2 = duration_cast<microseconds>(end - start2);
     std::cout << "---- total solve time = "<< duration_t.count()/1e6 << std::endl;
     std::cout << "saving policy and value funtion\n";
     cnpy::npy_save(results_path + "policy.npy", &p_out_policy_vec[0], {p_out_policy_vec.size(),1},"w");
@@ -805,6 +806,7 @@ int main(){
 
     time_file.open("temp_runTime.txt", std::ios::app);
     time_file << duration_t.count()/1e6 << "\n";
+    time_file << duration_t2.count()/1e6 << "\n";
     time_file.close();
 
 
