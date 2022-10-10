@@ -1,5 +1,5 @@
 FROM nvcr.io/nvidia/l4t-pytorch:r35.1.0-pth1.12-py3
-
+# FROM pytorch/pytorch:1.12.1-cuda11.3-cudnn8-devel
 RUN apt-get update
 RUN apt-get install -y vim git
 #RUN apt-get install libopenexr-dev
@@ -14,7 +14,7 @@ RUN pip install addict anyio argon2-cffi argon2-cffi-bindings argparse attrs bab
     && pip install importlib-resources jedi jinja2 joblib json5 jsonschema \
     && pip install numpy open3d pandas scikit-image scikit-learn scipy seaborn tqdm urllib3
 
-RUN apt-get install -y python3-rtree
+RUN apt-get install -y python3-rtree cmake
 RUN python3 -m pip install pyzmq
 RUN python3 -m pip install trimesh mathutils==2.81.2
 
