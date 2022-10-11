@@ -1280,9 +1280,9 @@ int main(int argc, char *argv[]){
     
 
     std::ofstream fout_time("temp_runTime.txt");
-    fout_time << build_t.count()/1e6 << "\n";
+    fout_time << "total time: " <<build_t.count()/1e6 << "\n";
 
-    fout_time << time_build_only.count()/1e6 << "\n";
+    fout_time << "build time: "<<time_build_only.count()/1e6 << "\n";
 
     fout_time.close();
 

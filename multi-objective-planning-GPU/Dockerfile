@@ -16,7 +16,7 @@ RUN python3 -m pip install pyzmq
 RUN python3 -m pip install trimesh mathutils==2.81.2
 
 RUN mkdir cnpy && cd cnpy && git clone https://github.com/rogersce/cnpy.git
-RUN cd ../ && mkdir build && cd build && cmake ../cnpy/cnpy
+RUN mkdir build && cd build && cmake ../cnpy/cnpy
 RUN cd build && make && make install && ln -s libcnpy.so /usr/lib
 RUN ldconfig
 
