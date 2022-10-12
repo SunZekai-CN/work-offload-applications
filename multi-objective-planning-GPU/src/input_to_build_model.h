@@ -6,7 +6,7 @@ std::string prob_name = "DG3_g100x100x120_r5k_vmax6_2LpDynObs_0.4_0.1_exp_3s_2r"
 float alpha_header = 0.05; // 1 for only energy, 0 for only time
 //extern float alpha;
 
-int32_t nt = 100;
+int32_t nt = 4;
 float dt = 1;
 int32_t gsize = 100;
 
