@@ -25,6 +25,7 @@ print('listening...')
 times = dict()
 map_info_compressed = pickle.loads(socket.recv())
 total_begin = time.time()
+print("i get and handling...")
 
 map_info = []
 begin = time.time()
@@ -39,12 +40,12 @@ for i in range(len(map_info)):
 
 
 process = os.popen("cd src && CUDA_VISIBLE_DEVICES=0 ./bin/build_model")
-# print(process.read())
+process.read()
 process = os.popen("cd src && python3 convert_model_datatype.py && cp temp_modelOp_dirName.txt ../Post_processing/temp_modelOp_dirName.txt")
-# print(process.read())
+process.read()
 process = os.popen("cd src && CUDA_VISIBLE_DEVICES=0 ./bin/spvi_2")
-# print(process.read())
-
+process.read()
+print("i finish...")
 output = []
 for i in range(len(output_files)):
     output.append(np.load(output_path+output_files[i]+".npy"))
@@ -67,9 +68,9 @@ while line:
     lineData=preprocessing(line) 
     if len(lineData)==4 and lineData[2]=="gpu:":
         on_gpu+=float(lineData[3])
-        print(lineData)
     line = f.readline() 
 f.close()
 
 times["on GPU"] = on_gpu
+pickle.loads(socket.recv())
 socket.send(pickle.dumps(times))
