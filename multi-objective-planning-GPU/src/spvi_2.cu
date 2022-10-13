@@ -430,6 +430,7 @@ static void get_mdp_model(std::string model_fpath){
 
 
     //initialise host vector to allocate device memory and copy to it.
+    auto start = high_resolution_clock::now(); 
     thrust::host_vector<float> s_host_PV_vec(s_Ns, 0);
     float* s_host_PV = thrust::raw_pointer_cast(&s_host_PV_vec[0]);
 
@@ -501,6 +502,12 @@ static void get_mdp_model(std::string model_fpath){
     // thrust::device_vector<float> testPV(s_dev_PV, s_dev_PV + s_Ns);
     // for(int i = 0; i < testPV.size(); i++)
     //     std::cout << testPV[i] << std::endl;
+    auto end = high_resolution_clock::now(); 
+    auto duration_t = duration_cast<microseconds>(end - start);
+    std::ofstream time_file;
+    time_file.open("temp_runTime.txt", std::ios::app);
+    time_file << "load_model on gpu: " << duration_t.count()/1e6 << "\n";
+    time_file.close();
 }
 
 
@@ -666,6 +673,7 @@ int solver_spvi_solve(thrust::host_vector<uint32_t>  &p_out_policy_vec,
     bool b_done = false;
     uint32_t num_iterations = 0;
     bool b_timed_out = false;
+    auto start = high_resolution_clock::now(); 
     while(!b_done)
     {
         num_iterations++;
@@ -705,7 +713,12 @@ int solver_spvi_solve(thrust::host_vector<uint32_t>  &p_out_policy_vec,
 
     cudaErr = cudaMemcpy(p_out_value_func, s_dev_CV, (size_t)(s_Ns*sizeof(float)), cudaMemcpyDeviceToHost);
     assert(cudaErr == cudaSuccess);
-
+    auto end = high_resolution_clock::now(); 
+    auto duration_t = duration_cast<microseconds>(end - start);
+    std::ofstream time_file;
+    time_file.open("temp_runTime.txt", std::ios::app);
+    time_file << "solve on gpu: " << duration_t.count()/1e6 << "\n";
+    time_file.close();
     // Free any CPU RAM that was malloc'd in this function
     if (s_host_cooRowIndex != NULL) {free(s_host_cooRowIndex);}
     if (s_host_cooColIndex != NULL) {free(s_host_cooColIndex);}
@@ -792,21 +805,23 @@ int main(){
     // Load in MDP from external format
     // get_mdp_model_test();
     auto start = high_resolution_clock::now(); 
-        get_mdp_model(model_data_path);
-        printf("mdp model loaded\n");
+    get_mdp_model(model_data_path);
+    printf("mdp model loaded\n");
     auto start2 = high_resolution_clock::now(); 
-        solver_spvi_solve(p_out_policy_vec, p_out_value_func_vec,  max_solver_time_s);
+    solver_spvi_solve(p_out_policy_vec, p_out_value_func_vec,  max_solver_time_s);
     auto end = high_resolution_clock::now(); 
     auto duration_t = duration_cast<microseconds>(end - start);
-    auto duration_t2 = duration_cast<microseconds>(end - start2);
+    auto load_model = duration_cast<microseconds>(start2 - start);
+    auto solve_time = duration_cast<microseconds>(end - start2);
     std::cout << "---- total solve time = "<< duration_t.count()/1e6 << std::endl;
     std::cout << "saving policy and value funtion\n";
     cnpy::npy_save(results_path + "policy.npy", &p_out_policy_vec[0], {p_out_policy_vec.size(),1},"w");
     cnpy::npy_save(results_path + "value_function.npy", &p_out_value_func_vec[0], {p_out_value_func_vec.size(),1},"w");
 
     time_file.open("temp_runTime.txt", std::ios::app);
-    time_file << duration_t.count()/1e6 << "\n";
-    time_file << duration_t2.count()/1e6 << "\n";
+    time_file << "total solve: " << duration_t.count()/1e6 << "\n";
+    time_file << "load model: " << load_model.count()/1e6 << "\n";
+    time_file << "solve time: " << solve_time.count()/1e6 << "\n";
     time_file.close();
 
 

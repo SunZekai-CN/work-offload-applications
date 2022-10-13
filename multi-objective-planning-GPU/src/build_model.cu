@@ -1108,7 +1108,10 @@ int main(int argc, char *argv[]){
 
 
     //----- start copying data to device --------
-
+    thrust::host_vector<float> each_time(100);
+    for( int i =0; i<100; i++)
+        each_time[i] = 0;
+    auto start_ongpu = high_resolution_clock::now(); 
     // Copy vel field data to device memory using thrust device_vector
     thrust::device_vector<float> D_all_u_vec (all_u_mat, all_u_mat + all_u_n_elms);
     thrust::device_vector<float> D_all_v_vec (all_v_mat, all_v_mat + all_v_n_elms);
@@ -1171,7 +1174,6 @@ int main(int argc, char *argv[]){
     auto duration_t = duration_cast<microseconds>(end - start);
 
     //IMP: Run time loop till nt-1. There ar no S2s to S1s in the last timestep
-    std::ofstream each_time("each_excuteTime.txt");
     for(int t = 0; t < nt-1; t++){
         std::cout << "*** Computing data for timestep, T = " << t << std::endl;
         D_tdummy[0] = t;
@@ -1195,9 +1197,9 @@ int main(int argc, char *argv[]){
         std::cout << "duration@t = "<< duration_t.count()/1e6 << "sec" << std::endl;
         std::cout << 3*H_Aarr_of_cooS1[0].size()*4*1e-6 << " MB" << std::endl;
         std::cout << std::endl << std::endl;
-        each_time << duration_t.count()/1e6 << "\n";
+        each_time[t] = duration_t.count()/1e6;
     }
-    each_time.close();
+    
 
     // fill R vectors of each action for the last time step with high negative values. 
     // this has to be done seaprately because the above loop runs till nt-1.
@@ -1243,7 +1245,7 @@ int main(int argc, char *argv[]){
 
     auto end_build_only = high_resolution_clock::now(); // end build only
     auto time_build_only = duration_cast<microseconds>(end_build_only - start_build_only);  // time build only
-
+    auto time_ongpu = duration_cast<microseconds>(end_build_only - start_ongpu);  // time build only
 
     // save final coo data
     thrust::host_vector<long long int> H_master_cooS1(master_nnz);
@@ -1280,10 +1282,13 @@ int main(int argc, char *argv[]){
     
 
     std::ofstream fout_time("temp_runTime.txt");
-    fout_time << "total time: " <<build_t.count()/1e6 << "\n";
+    fout_time << "total build: " <<build_t.count()/1e6 << "\n";
 
     fout_time << "build time: "<<time_build_only.count()/1e6 << "\n";
 
+    fout_time << "build on gpu: "<< time_ongpu.count()/1e6 << "\n";
+    for( int i =0; i<nt-1; i++)
+        fout_time << i <<"th frame: "<< each_time[i] << "\n";
     fout_time.close();
 
 
