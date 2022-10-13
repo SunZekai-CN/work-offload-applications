@@ -15,10 +15,10 @@ output_path = "./src/data_solverOutput/custom1/DG3_g100x100x120_r5k_vmax6_2LpDyn
 output_files= ['policy','value_function']
 
 # connect zmq server
-# context = zmq.Context()
-# socket = context.socket(zmq.REQ)
-# socket.connect(f"tcp://{addr}")
-# time.sleep(1)
+context = zmq.Context()
+socket = context.socket(zmq.REQ)
+socket.connect(f"tcp://{addr}")
+time.sleep(1)
 
 map_info = []
 for i in range(len(map_files)):
@@ -33,10 +33,10 @@ np.savez_compressed(map_info_compressed,all_u_mat=map_info[0],all_v_mat=map_info
 end = time.time()
 times["compression on client"] = end - begin
 
+print("i send and waiting...")
 begin = time.time()
-# socket.send(pickle.dumps(map_info_compressed))
-# output = pickle.loads(socket.recv())
-output = map_info_compressed
+socket.send(pickle.dumps(map_info_compressed))
+output = pickle.loads(socket.recv())
 end = time.time()
 times["request"] = end -begin
 
@@ -52,12 +52,8 @@ times["decompression on client"] = end - begin
 for i in range(len(output_files)):
     np.save(output_path +output_files[i],output_decompressed[i])
 
-# times_on_server = pickle.loads(socket.recv())
-times_on_server = dict()
-times_on_server["on server"] = 1.0
-times_on_server["on GPU"] = 0.5
-times_on_server["decompression"] = 0.1
-times_on_server["compression"] = 0.2
+socket.send(pickle.dumps("ok"))
+times_on_server = pickle.loads(socket.recv())
 
 times["on server"] = times_on_server["on server"]
 times["send+receive"] = times["request"]-times["on server"]
@@ -71,5 +67,5 @@ for k in ["on server GPU","offload_overhead","send+receive","compression on clie
     print(f'{k} : {times[k]:.3f}')
 
 
-with codecs.open('temp_on_server.json','a', 'utf-8') as outf:
+with codecs.open('temp_on_server.json','w', 'utf-8') as outf:
     json.dump(times, outf, ensure_ascii=False)

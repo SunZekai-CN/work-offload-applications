@@ -9,11 +9,11 @@ def preprocessing(line):
 
 total_start = time.time()
 process = os.popen("cd src && CUDA_VISIBLE_DEVICES=0 ./bin/build_model")
-# print(process.read())
+process.read()
 process = os.popen("cd src && python3 convert_model_datatype.py && cp temp_modelOp_dirName.txt ../Post_processing/temp_modelOp_dirName.txt")
-# print(process.read())
+process.read()
 process = os.popen("cd src && CUDA_VISIBLE_DEVICES=0 ./bin/spvi_2")
-# print(process.read())
+process.read()
 total_end = time.time()
 total_time=total_end-total_start
 
