@@ -1,6 +1,5 @@
 import time
 import pickle
-import numcodecs
 import zmq
 import numpy as np
 import sys
