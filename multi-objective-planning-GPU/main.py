@@ -7,6 +7,7 @@ def preprocessing(line):
     lineData=line.strip().split(' ')
     return lineData
 
+times_on_robot=dict()
 total_start = time.time()
 process = os.popen("cd src && CUDA_VISIBLE_DEVICES=0 ./bin/build_model")
 process.read()
@@ -15,7 +16,7 @@ process.read()
 process = os.popen("cd src && CUDA_VISIBLE_DEVICES=0 ./bin/spvi_2")
 process.read()
 total_end = time.time()
-total_time=total_end-total_start
+times_on_robot["total time on robot"]=total_end-total_start
 
 f=open(os.path.join("./src/temp_runTime.txt"),"r")
 line = f.readline()    
@@ -23,19 +24,27 @@ on_gpu=0
 while line:              
     lineData=preprocessing(line) 
     if len(lineData)==4 and lineData[2]=="gpu:":
-        on_gpu+=float(lineData[3])
+        times_on_robot[lineData[0]]=float(lineData[3])
     line = f.readline() 
 f.close()
-print("total time on robot:", total_time)
-print("GPU time on robot:",on_gpu)
-
+times_on_robot["build on robot GPU"] = times_on_robot["build"]
+times_on_robot["solve on robot GPU"] = times_on_robot["load_model"]+times_on_robot["solve"]
 
 
 with codecs.open("temp_on_server.json", "r", "utf-8") as f:
     for line in f:
         times_on_server = json.loads(line)
-print("GPU time on server:",times_on_server["on server GPU"])
-for k in ["offload_overhead","send+receive","compression on client","decompression on server","compression on server","decompression on client"]:
-    print(f'{k} : {times_on_server[k]:.3f}')
-ad_hoc_offload = total_time - on_gpu + times_on_server["on server GPU"] + times_on_server["offload_overhead"]
-print(f"total ad hoc offload: {ad_hoc_offload} , {ad_hoc_offload/total_time*100:.2f}%")
+
+times=dict()
+times["total time on robot"]=times_on_robot["total time on robot"]
+times["GPU time on robot"]=times_on_robot["build on robot GPU"]+times_on_robot["solve on robot GPU"]
+times["GPU time on server"]=times_on_server["build on server GPU"]+times_on_server["solve on server GPU"]
+times["offload overhead"] = times_on_server["build offload_overhead"]+times_on_server["solve offload_overhead"]
+times["total ad hoc offload"] = times["total time on robot"]-times["GPU time on robot"]+times["GPU time on server"]+times["offload overhead"]
+times["speed up ratio"] = times["total ad hoc offload"]/times["total time on robot"]*100
+for k,v in times_on_server.items():
+    print(f'{k} : {v:.3f}')
+for k,v in times_on_robot.items():
+    print(f'{k} : {v:.3f}')
+for k,v in times.items():
+    print(f'{k} : {v:.3f}')
