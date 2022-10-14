@@ -42,9 +42,12 @@ times["GPU time on server"]=times_on_server["build on server GPU"]+times_on_serv
 times["offload overhead"] = times_on_server["build offload_overhead"]+times_on_server["solve offload_overhead"]
 times["total ad hoc offload"] = times["total time on robot"]-times["GPU time on robot"]+times["GPU time on server"]+times["offload overhead"]
 times["speed up ratio"] = times["total ad hoc offload"]/times["total time on robot"]*100
+print("********server*********")
 for k,v in times_on_server.items():
     print(f'{k} : {v:.3f}')
+print("********robot*********")
 for k,v in times_on_robot.items():
     print(f'{k} : {v:.3f}')
+print("********total*********")
 for k,v in times.items():
     print(f'{k} : {v:.3f}')
