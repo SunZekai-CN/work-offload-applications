@@ -1,9 +1,7 @@
 # FROM nvcr.io/nvidia/l4t-pytorch:r35.1.0-pth1.12-py3
 FROM pytorch/pytorch:1.13.1-cuda11.6-cudnn8-devel
-# RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
 RUN apt-get update
 RUN apt-get install -y vim git
-#RUN apt-get install libopenexr-dev
 RUN DEBIAN_FRONTEND=oninteractive apt-get install -y python3-opencv wget unzip python3-virtualenv
 RUN python3 -m pip install --upgrade pip
 
