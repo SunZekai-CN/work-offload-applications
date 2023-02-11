@@ -14,7 +14,7 @@ from models.experimental import attempt_load
 from val import run_nms, post_process_batch
 import cv2
 import os.path as osp
-
+import torch.nn as nn
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -69,6 +69,9 @@ if __name__ == '__main__':
     print('Using device: {}'.format(device))
 
     model = attempt_load(args.weights, map_location=device)
+    for m in model.modules():
+        if isinstance(m, nn.Upsample):
+            m.recompute_scale_factor = None
     stride = int(model.stride.max())  # model stride
     imgsz = check_img_size(args.imgsz, s=stride)  # check image size
     dataset = LoadImages(args.input_path, img_size=imgsz, stride=stride, auto=True)
