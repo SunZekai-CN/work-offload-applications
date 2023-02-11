@@ -103,7 +103,7 @@ run the `dataset.py` script for each domain in the `core/domains/<domain>` direc
 
 For example, for the 2D grid world domain, we can generate the maze or obst dataset by:
 ```bash
-python core/domains/gridworld/dataset.py --map <maze | obst> -sz 15 15 -vr <view range> -trajlen 15 -mxs <max rollout steps> -n 4000 [--ego] [--clear]
+python core/domains/gridworld/Dataset.py --map <maze | obst> -sz 15 15 -vr <view range> -trajlen 15 -mxs <max rollout steps> -n 4000 [--ego] [--clear]
 ```
 
 Here, view range defines the radius the agent is able to view. 
@@ -114,8 +114,8 @@ By default, the generated data will be saved at `data/<domain>/`.
 
 ##### Examples
 ```bash
-python core/domains/gridworld/dataset.py --map maze -sz 15 15 -vr 2 -trajlen 15 -mxs 500 -n 4000 --clear
-python core/domains/gridworld/dataset.py --map maze -sz 15 15 -vr 2 -trajlen 15 -mxs 500 -n 4000 --ego --clear
+python core/domains/gridworld/Dataset.py --map maze -sz 15 15 -vr 2 -trajlen 15 -mxs 500 -n 4000 --clear
+python core/domains/gridworld/Dataset.py --map maze -sz 15 15 -vr 2 -trajlen 15 -mxs 500 -n 4000 --ego --clear
 ```
 
 Examples of how to run the scripts can be found in the comments at the bottom of each script.

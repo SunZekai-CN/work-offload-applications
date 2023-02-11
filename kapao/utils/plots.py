@@ -284,7 +284,7 @@ def plot_study_txt(path='', x=None):  # from utils.plots import *; plot_study_tx
 
 
 def plot_labels(labels, names=(), save_dir=Path('')):
-    # plot dataset labels
+    # plot Dataset labels
     print('Plotting labels... ')
     c, b = labels[:, 0], labels[:, 1:].transpose()  # classes, boxes
     nc = int(c.max() + 1)  # number of classes

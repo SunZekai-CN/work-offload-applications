@@ -263,7 +263,7 @@ def check_file(file):
 
 
 def check_dataset(data, autodownload=True):
-    # Download and/or unzip dataset if not found locally
+    # Download and/or unzip Dataset if not found locally
     # Usage: https://github.com/ultralytics/yolov5/releases/download/v1.0/coco128_with_yaml.zip
 
     # Download (optional)
@@ -292,7 +292,7 @@ def check_dataset(data, autodownload=True):
         val = [Path(x).resolve() for x in (val if isinstance(val, list) else [val])]  # val path
         if not all(x.exists() for x in val):
             if 'kp_bbox' in data.keys():
-                print('Writing dataset labels to {}...'.format(os.path.join(data['path'], data['labels'])))
+                print('Writing Dataset labels to {}...'.format(os.path.join(data['path'], data['labels'])))
                 write_kp_labels(data)
             else:
                 print('\nWARNING: Dataset not found, nonexistent paths: %s' % [str(x) for x in val if not x.exists()])

@@ -1,6 +1,0 @@
-.idea
-__pycache__
-.ipynb_checkpoints
-build
-.vscode
-lightning_logs

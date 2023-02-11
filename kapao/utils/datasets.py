@@ -1,6 +1,6 @@
 # YOLOv5 🚀 by Ultralytics, GPL-3.0 license
 """
-Dataloaders and dataset utils
+Dataloaders and Dataset utils
 """
 
 import glob
@@ -95,7 +95,7 @@ def exif_transpose(image):
 def create_dataloader(path, labels_dir, imgsz, batch_size, stride, single_cls=False, hyp=None, augment=False, cache=False, pad=0.0,
                       rect=False, rank=-1, workers=8, image_weights=False, quad=False, prefix='',
                       kp_flip=None, kp_bbox=None):
-    # Make sure only the first process in DDP process the dataset first, and the following others can use the cache
+    # Make sure only the first process in DDP process the Dataset first, and the following others can use the cache
     with torch_distributed_zero_first(rank):
         dataset = LoadImagesAndLabels(path, labels_dir, imgsz, batch_size,
                                       augment=augment,  # augment images
@@ -111,7 +111,7 @@ def create_dataloader(path, labels_dir, imgsz, batch_size, stride, single_cls=Fa
                                       kp_bbox=kp_bbox)
 
         # for i in range(10):
-        #     dataset.__getitem__(i)
+        #     Dataset.__getitem__(i)
         # import sys
         # sys.exit()
 
@@ -119,7 +119,7 @@ def create_dataloader(path, labels_dir, imgsz, batch_size, stride, single_cls=Fa
     nw = min([os.cpu_count(), batch_size if batch_size > 1 else 0, workers])  # number of workers
     sampler = torch.utils.data.distributed.DistributedSampler(dataset) if rank != -1 else None
     loader = torch.utils.data.DataLoader if image_weights else InfiniteDataLoader
-    # Use torch.utils.data.DataLoader() if dataset.properties will update during training else InfiniteDataLoader()
+    # Use torch.utils.data.DataLoader() if Dataset.properties will update during training else InfiniteDataLoader()
     dataloader = loader(dataset,
                         batch_size=batch_size,
                         num_workers=nw,
@@ -228,7 +228,7 @@ class LoadImages:  # for inference
             self.count += 1
             img0 = cv2.imread(path)  # BGR
             assert img0 is not None, 'Image Not Found ' + path
-            print(f'image {self.count}/{self.nf} {path}: ', end='')
+            print(f'image {self.count}/{self.nf} {path}: ')
 
         # Padded resize
         img = letterbox(img0, self.img_size, stride=self.stride, auto=self.auto)[0]
@@ -505,7 +505,7 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
             pbar.close()
 
     def cache_labels(self, path=Path('./labels.cache'), prefix=''):
-        # Cache dataset labels, check images and read shapes
+        # Cache Dataset labels, check images and read shapes
         x = {}  # dict
         nm, nf, ne, nc, msgs = 0, 0, 0, 0, []  # number missing, found, empty, corrupt, messages
         desc = f"{prefix}Scanning '{path.parent / path.stem}' images and labels..."
@@ -545,7 +545,7 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
 
     # def __iter__(self):
     #     self.count = -1
-    #     print('ran dataset iter')
+    #     print('ran Dataset iter')
     #     #self.shuffled_vector = np.random.permutation(self.nF) if self.augment else np.arange(self.nF)
     #     return self
 
@@ -693,7 +693,7 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
 
 # Ancillary functions --------------------------------------------------------------------------------------------------
 def load_image(self, i):
-    # loads 1 image from dataset index 'i', returns im, original hw, resized hw
+    # loads 1 image from Dataset index 'i', returns im, original hw, resized hw
     im = self.imgs[i]
     if im is None:  # not cached in ram
         npy = self.img_npy[i]
@@ -861,7 +861,7 @@ def flatten_recursive(path='../datasets/coco128'):
 
 
 def extract_boxes(path='../datasets/coco128', labels_dir='labels'):  # from utils.datasets import *; extract_boxes()
-    # Convert detection dataset into classification dataset, with one directory per class
+    # Convert detection Dataset into classification Dataset, with one directory per class
     path = Path(path)  # images dir
     shutil.rmtree(path / 'classifier') if (path / 'classifier').is_dir() else None  # remove existing
     files = list(path.rglob('*.*'))
@@ -895,7 +895,7 @@ def extract_boxes(path='../datasets/coco128', labels_dir='labels'):  # from util
 
 
 def autosplit(path='../datasets/coco128/images', weights=(0.9, 0.1, 0.0), annotated_only=False, labels_dir='labels_dir'):
-    """ Autosplit a dataset into train/val/test splits and save path/autosplit_*.txt files
+    """ Autosplit a Dataset into train/val/test splits and save path/autosplit_*.txt files
     Usage: from utils.datasets import *; autosplit()
     Arguments
         path:            Path to images directory
@@ -965,13 +965,13 @@ def verify_image_label(args):
 
 
 def dataset_stats(path='coco128.yaml', autodownload=False, verbose=False, profile=False, hub=False, labels_dir='labels'):
-    """ Return dataset statistics dictionary with images and instances counts per split per class
+    """ Return Dataset statistics dictionary with images and instances counts per split per class
     To run in parent directory: export PYTHONPATH="$PWD/yolov5"
     Usage1: from utils.datasets import *; dataset_stats('coco128.yaml', autodownload=True)
     Usage2: from utils.datasets import *; dataset_stats('../datasets/coco128_with_yaml.zip')
     Arguments
         path:           Path to data.yaml or data.zip (with data.yaml inside data.zip)
-        autodownload:   Attempt to download dataset if not found locally
+        autodownload:   Attempt to download Dataset if not found locally
         verbose:        Print stats dictionary
     """
 
@@ -984,7 +984,7 @@ def dataset_stats(path='coco128.yaml', autodownload=False, verbose=False, profil
         if str(path).endswith('.zip'):  # path is data.zip
             assert Path(path).is_file(), f'Error unzipping {path}, file not found'
             assert os.system(f'unzip -q {path} -d {path.parent}') == 0, f'Error unzipping {path}'
-            dir = path.with_suffix('')  # dataset directory
+            dir = path.with_suffix('')  # Dataset directory
             return True, str(dir), next(dir.rglob('*.yaml'))  # zipped, data_dir, yaml_path
         else:  # path is data.yaml
             return False, None, path
@@ -1002,7 +1002,7 @@ def dataset_stats(path='coco128.yaml', autodownload=False, verbose=False, profil
         data = yaml.safe_load(f)  # data dict
         if zipped:
             data['path'] = data_dir  # TODO: should this be dir.resolve()?
-    check_dataset(data, autodownload)  # download dataset if missing
+    check_dataset(data, autodownload)  # download Dataset if missing
     hub_dir = Path(data['path'] + ('-hub' if hub else ''))
     stats = {'nc': data['nc'], 'names': data['names']}  # statistics dictionary
     for split in 'train', 'val', 'test':
@@ -1010,7 +1010,7 @@ def dataset_stats(path='coco128.yaml', autodownload=False, verbose=False, profil
             stats[split] = None  # i.e. no test set
             continue
         x = []
-        dataset = LoadImagesAndLabels(data[split], labels_dir=labels_dir)  # load dataset
+        dataset = LoadImagesAndLabels(data[split], labels_dir=labels_dir)  # load Dataset
         for label in tqdm(dataset.labels, total=dataset.n, desc='Statistics'):
             x.append(np.bincount(label[:, 0].astype(int), minlength=data['nc']))
         x = np.array(x)  # shape(128x80)

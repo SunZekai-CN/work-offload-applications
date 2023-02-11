@@ -19,7 +19,6 @@ from val import run_nms, post_process_batch
 import numpy as np
 import gdown
 import csv
-import torch.nn as nn
 
 # youtube id, stream tag, start time, end time
 # shuffle: yBZ0Y2t0ceo, 135, 34, 42
@@ -115,9 +114,6 @@ if __name__ == '__main__':
     print('Using device: {}'.format(device))
 
     model = attempt_load(args.weights, map_location=device)  # load FP32 model
-    for m in model.modules():
-        if isinstance(m, nn.Upsample):
-            m.recompute_scale_factor = None
     half = args.half & (device.type != 'cpu')
     if half:  # half precision only supported on CUDA
         model.half()

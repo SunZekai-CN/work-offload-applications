@@ -34,7 +34,7 @@ def generate_expert_demos(get_save_path, data: str = None, n_episodes: int = 100
 
 
 def add_demo_gen_args(parser: argparse.ArgumentParser):
-    parser.add_argument('--clear', action="store_true", help="renew dataset")
+    parser.add_argument('--clear', action="store_true", help="renew Dataset")
     parser.add_argument('--n_episodes', '-n', default=1000, type=int, help="number of expert episodes")
     parser.add_argument('--val_ratio', '-val', default=0.25, type=float,
                         help="ratio of validation of trajectory samples")

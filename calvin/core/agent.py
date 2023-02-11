@@ -1,3 +1,4 @@
+import pickle
 import sys
 import time
 from typing import List, Union, Any, Tuple
@@ -122,7 +123,12 @@ class MemoryAgent(Agent):
         new_episodes = [len(episode) == 0 for episode in episodes]
 
         histories = self.handler.collate(processed_obsvs)
-
+        step = kwargs["step"]
+        os.makedirs(f"GPUoffload_test/saved_obs/{step}", exist_ok=True)
+        with open(f"GPUoffload_test/saved_obs/{step}/histories.pkl", 'wb+') as file:
+            pickle.dump(histories, file)
+        with open(f"GPUoffload_test/saved_obs/{step}/new_episodes.pkl", 'wb+') as file:
+            pickle.dump(new_episodes, file)
         self.actions, outputs, self.carrier = self.policy(histories, new_episodes, self.carrier)
 
         if save_pred:
@@ -136,7 +142,8 @@ class MemoryAgent(Agent):
 
     def rollouts(self, env: VecEnv, n_steps: int = None, n_episodes: int = None,
                  train: bool = True, experiences: ExperienceManager = None, save_pred=False):
-        start_time = time.time()
+        total_time = 0
+        total_step = 0
         stats = Stats()
         if experiences is None: experiences = self.experiences
         self.training = train
@@ -153,12 +160,21 @@ class MemoryAgent(Agent):
                 if not reset:
                     episode.push(action, *data)
 
-            actions = self._step(self.active_episodes, save_pred=save_pred)
+            start_time = time.time()
+            actions = self._step(self.active_episodes, save_pred=save_pred,step = total_step)
+            total_step += 1
+            if total_step >= 1000:
+                return None
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            total_time += elapsed_time
 
+            print("episode time: ", elapsed_time, "total time: ", total_time)
             if n_steps:
-                sys.stdout.write(f"\r--- Rolling out {count_steps + 1} / {n_steps} steps")
+                print(f"\r--- Rolling out {count_steps + 1} / {n_steps} steps")
             else:
-                sys.stdout.write(f"\r--- Rolling out {count_episodes + 1} / {n_episodes} episodes")
+                print()
+                print(f"\r--- Rolling out {count_episodes + 1} / {n_episodes} episodes")
             sys.stdout.flush()
 
             for episode, done, info in zip(self.active_episodes, dones, infos):
@@ -178,7 +194,7 @@ class MemoryAgent(Agent):
             episode.delete()
 
         experiences.save()
-        return stats.means(), time.time() - start_time
+        return stats.means(), total_time
 
     def rollouts_(self, env: Env, n_episodes: int = None, train: bool = True,
                   experiences: ExperienceManager = None, save_pred=False):
@@ -216,7 +232,9 @@ class MemoryAgent(Agent):
 
     def policy(self, histories, new_episodes: List[bool], carrier: dict = None):
         if carrier is None: carrier = {}
+        # input 的 memory size；从history读文件开始，计算时间；GPU inference time
         outputs = self.trainer.predict(histories, is_train=False, inference=True, new_episodes=new_episodes, **carrier)
+        # =====
         outputs, carrier = self.handler.output_to_carrier(outputs)
         actions = self.trainer.model.action(**{**histories, **outputs}, explore=self.training)
         return self.handler.postproc_actions(actions), outputs, carrier

@@ -316,7 +316,7 @@ def run(data,
 
 def parse_opt():
     parser = argparse.ArgumentParser(prog='val.py')
-    parser.add_argument('--data', type=str, default='data/coco-kp.yaml', help='dataset.yaml path')
+    parser.add_argument('--data', type=str, default='data/coco-kp.yaml', help='Dataset.yaml path')
     parser.add_argument('--weights', default='kapao_s_coco.pt')
     parser.add_argument('--batch-size', type=int, default=1, help='batch size')
     parser.add_argument('--imgsz', type=int, default=1280, help='inference size (pixels)')

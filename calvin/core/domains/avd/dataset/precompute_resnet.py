@@ -65,5 +65,5 @@ if __name__ == '__main__':
 
 
 """
-python core/domains/avd/dataset/precompute_resnet.py data/avd/src/
+python core/domains/avd/Dataset/precompute_resnet.py data/avd/src/
 """

@@ -1,0 +1,1 @@
+{"epoch": 4, "train_loss": 1.8875180237378792, "val_loss": 1.8706219382584095, "eval_success": 0.7, "eval_in_progress": 0.0, "eval_invalid_action": 0.08, "eval_repeat": 0.22, "eval_false_complete": 0.0, "eval_max_step_exceeded": 0.0, "eval_acc": 0.7, "eval_spl": 0.4708511231967736, "train_dur": 78.92922830581665, "rollout_dur": 0, "eval_dur": 7.564637660980225}

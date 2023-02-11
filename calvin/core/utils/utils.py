@@ -3,12 +3,12 @@ from collections import defaultdict
 import torch
 import random
 import numpy as np
-from gym.utils.seeding import create_seed
+# from gym.utils.seeding import create_seed
 
 
 def set_random_seed(seed: int = None):
     if seed is None:
-        seed = create_seed()
+        seed = 0
     else:
         torch.use_deterministic_algorithms(True)
     torch.manual_seed(seed)

@@ -94,8 +94,8 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     train_path, val_path = data_dict['train'], data_dict['val']
     nc = 1 if single_cls else int(data_dict['nc'])  # number of classes
     names = ['item'] if single_cls and len(data_dict['names']) != 1 else data_dict['names']  # class names
-    assert len(names) == nc, f'{len(names)} names found for nc={nc} dataset in {data}'  # check
-    is_coco = data.endswith('coco.yaml') and nc == 80  # COCO dataset
+    assert len(names) == nc, f'{len(names)} names found for nc={nc} Dataset in {data}'  # check
+    is_coco = data.endswith('coco.yaml') and nc == 80  # COCO Dataset
 
     labels_dir = data_dict.get('labels', 'labels')
     kp_flip = data_dict.get('kp_flip')
@@ -220,7 +220,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                                        prefix=colorstr('val: '), kp_flip=kp_flip, kp_bbox=kp_bbox)[0]
 
         if not resume:
-            # labels = np.concatenate(dataset.labels, 0)
+            # labels = np.concatenate(Dataset.labels, 0)
             # c = torch.tensor(labels[:, 0])  # classes
             # cf = torch.bincount(c.long(), minlength=nc) + 1.  # frequency
             # model._initialize_biases(cf.to(device))
@@ -276,7 +276,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
 
         # Update mosaic border (optional)
         # b = int(random.uniform(0.25 * imgsz, 0.75 * imgsz + gs) // gs * gs)
-        # dataset.mosaic_border = [b - imgsz, -b]  # height, width borders
+        # Dataset.mosaic_border = [b - imgsz, -b]  # height, width borders
 
         mloss = torch.zeros(4, device=device)  # mean losses
         if RANK != -1:
@@ -417,7 +417,7 @@ def parse_opt(known=False):
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', type=str, default='yolov5s6.pt', help='initial weights path')
     parser.add_argument('--cfg', type=str, default='', help='model.yaml path')
-    parser.add_argument('--data', type=str, default='data/coco-kp.yaml', help='dataset.yaml path')
+    parser.add_argument('--data', type=str, default='data/coco-kp.yaml', help='Dataset.yaml path')
     parser.add_argument('--hyp', type=str, default='data/hyps/hyp.kp-p6.yaml', help='hyperparameters path')
     parser.add_argument('--epochs', type=int, default=300)
     parser.add_argument('--batch-size', type=int, default=8, help='total batch size for all GPUs')
@@ -444,10 +444,10 @@ def parse_opt(known=False):
     parser.add_argument('--quad', action='store_true', help='quad dataloader')
     parser.add_argument('--linear-lr', action='store_true', help='linear LR')
     parser.add_argument('--label-smoothing', type=float, default=0.0, help='Label smoothing epsilon')
-    parser.add_argument('--upload_dataset', action='store_true', help='Upload dataset as W&B artifact table')
+    parser.add_argument('--upload_dataset', action='store_true', help='Upload Dataset as W&B artifact table')
     parser.add_argument('--bbox_interval', type=int, default=-1, help='Set bounding-box image logging interval for W&B')
     parser.add_argument('--save_period', type=int, default=-1, help='Log model after every "save_period" epoch')
-    parser.add_argument('--artifact_alias', type=str, default="latest", help='version of dataset artifact to be used')
+    parser.add_argument('--artifact_alias', type=str, default="latest", help='version of Dataset artifact to be used')
     parser.add_argument('--local_rank', type=int, default=-1, help='DDP parameter, do not modify')
     parser.add_argument('--freeze', type=int, default=0, help='Number of layers to freeze. backbone=10, all=24')
     parser.add_argument('--patience', type=int, default=100, help='EarlyStopping patience (epochs without improvement)')
