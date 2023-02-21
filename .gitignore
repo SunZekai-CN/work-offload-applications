@@ -1,1 +1,2 @@
 *.pyc
+kapao/GPUoffload_test/input/*.jpg
