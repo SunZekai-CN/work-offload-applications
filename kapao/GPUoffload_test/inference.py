@@ -71,6 +71,8 @@ if __name__ == '__main__':
 
     device = torch.device("cuda:0")
     print('Using device: {}'.format(device))
+    img = torch.ones(512).to(device)
+    img_t = torch.div(img,2.0)
 
     model = attempt_load(args.weights, map_location=device)
     for m in model.modules():
