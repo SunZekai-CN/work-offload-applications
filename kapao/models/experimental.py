@@ -93,7 +93,9 @@ def attempt_load(weights, map_location=None, inplace=True, fuse=True):
     for w in weights if isinstance(weights, list) else [weights]:
         ckpt = torch.load(attempt_download(w), map_location=map_location)  # load
         if fuse:
-            model.append(ckpt['ema' if ckpt.get('ema') else 'model'].float().fuse().eval())  # FP32 model
+            # model.append(ckpt['ema' if ckpt.get('ema') else 'model'].float().fuse().eval())  # FP32 model
+            # torch.save(model[-1],"./GPUoffload_test/saved_model/1.pt")
+            model.append(torch.load("./GPUoffload_test/saved_model/1.pt").cuda())  # FP32 model
         else:
             model.append(ckpt['ema' if ckpt.get('ema') else 'model'].float().eval())  # without layer fuse
 

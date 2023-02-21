@@ -18,6 +18,7 @@ from val import run_nms, post_process_batch
 import cv2
 import os.path as osp
 
+torch.cuda._tls.is_initializing = True
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -68,7 +69,7 @@ if __name__ == '__main__':
     data['flips'] = [None if f == -1 else f for f in args.flips]
     data['count_fused'] = False
 
-    device = select_device(args.device, batch_size=1)
+    device = torch.device("cuda:0")
     print('Using device: {}'.format(device))
 
     model = attempt_load(args.weights, map_location=device)
@@ -89,22 +90,27 @@ if __name__ == '__main__':
     skip = 0
     while i < max_inf_num:
         try:
+            print(f"processing {i + 1} / {max_inf_num}")
             time_ckp_0 = time.time()
             (pic_name, img, im0, _) = next(dataset_iterator)
             total_img_size += sys.getsizeof(img)
             pic_name=pic_name.split("/", -1)[-1].split(".", -1)[0]
             img = torch.from_numpy(img).to(device)
-            img = img / 255.0  # 0 - 255 to 0.0 - 1.0
+            
             if len(img.shape) == 3:
                 img = img[None]  # expand for batch dim
-            img = img.to(device)
             time_ckp_1 = time.time()
-            out = model(img, augment=True, kp_flip=data['kp_flip'], scales=data['scales'], flips=data['flips'])[0]
-            print("===================>device: ",next(model.parameters()).device)
+            img = torch.div(img,255.0)
+            # out = model(img, augment=True, kp_flip=data['kp_flip'], scales=data['scales'], flips=data['flips'])[0]
+            print("device: ",next(model.parameters()).device)
             time_ckp_2 = time.time()
             i += 1
-            print(f"processing {i + 1} / {max_inf_num}")
 
+            total_inf_time += time_ckp_2 - time_ckp_1
+            total_running_time += time_ckp_2 - time_ckp_0
+            print(f"T_robot : {time_ckp_2 - time_ckp_1}, average :{total_inf_time/i} (GPU computation time on robot)")
+            print(f"Service time : {time_ckp_2 - time_ckp_0}, average :{total_running_time/i}")
+            continue
             person_dets, kp_dets = run_nms(data, out)
             if(len(person_dets[0])==0):
                 continue
@@ -149,15 +155,11 @@ if __name__ == '__main__':
                 filename += '_kp_obj'
             filename += '.png'
 
-            total_inf_time += time_ckp_2 - time_ckp_1
-            total_running_time += time.time() - time_ckp_0
 
         except StopIteration:
             dataset_iterator = iter(dataset)
 
-    print(f"Average input size: {total_img_size/i} byte, "
-          f"Average running time: {total_running_time/i}, "
-          f"Average inference time: {total_inf_time/i} ")
+    
 
 
 
