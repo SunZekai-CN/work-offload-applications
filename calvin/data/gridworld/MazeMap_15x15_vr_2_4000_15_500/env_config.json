@@ -1,1 +1,0 @@
-{"seed": null, "map": "maze", "size": [15, 15], "p_thick": 1, "min_traj_len": 15, "ego": false, "four_way": false, "view_range": 2, "max_steps": 500, "allow_backward": false, "episode_in_mem": true, "obsv_in_mem": true, "trans_in_mem": true, "domain": "grid"}

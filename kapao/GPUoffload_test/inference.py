@@ -1,6 +1,9 @@
 import sys
 import time
 from pathlib import Path
+
+from torch import nn
+
 FILE = Path(__file__).absolute()
 sys.path.append(FILE.parents[1].as_posix())  # add kapao/ to path
 
@@ -14,7 +17,7 @@ from models.experimental import attempt_load
 from val import run_nms, post_process_batch
 import cv2
 import os.path as osp
-import torch.nn as nn
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -83,29 +86,28 @@ if __name__ == '__main__':
     total_img_size = 0
     total_running_time = 0
     total_inf_time = 0
-
+    skip = 0
     while i < max_inf_num:
         try:
-            print(f"processing {i + 1} / {max_inf_num}")
             time_ckp_0 = time.time()
             (pic_name, img, im0, _) = next(dataset_iterator)
+            total_img_size += sys.getsizeof(img)
             pic_name=pic_name.split("/", -1)[-1].split(".", -1)[0]
-            # img tensor memory size
             img = torch.from_numpy(img).to(device)
             img = img / 255.0  # 0 - 255 to 0.0 - 1.0
             if len(img.shape) == 3:
                 img = img[None]  # expand for batch dim
-
-            total_img_size += sys.getsizeof(img)
+            img = img.to(device)
             time_ckp_1 = time.time()
-
             out = model(img, augment=True, kp_flip=data['kp_flip'], scales=data['scales'], flips=data['flips'])[0]
-
+            print("===================>device: ",next(model.parameters()).device)
             time_ckp_2 = time.time()
-
+            i += 1
+            print(f"processing {i + 1} / {max_inf_num}")
 
             person_dets, kp_dets = run_nms(data, out)
-
+            if(len(person_dets[0])==0):
+                continue
 
             if args.bbox:
                 bboxes = scale_coords(img.shape[2:], person_dets[0][:, :4], im0.shape[:2]).round().cpu().numpy()
@@ -146,10 +148,10 @@ if __name__ == '__main__':
             if data['use_kp_dets']:
                 filename += '_kp_obj'
             filename += '.png'
-            cv2.imwrite(f"{args.output_path}/{filename}", im0)
-            i += 1
+
             total_inf_time += time_ckp_2 - time_ckp_1
             total_running_time += time.time() - time_ckp_0
+
         except StopIteration:
             dataset_iterator = iter(dataset)
 
