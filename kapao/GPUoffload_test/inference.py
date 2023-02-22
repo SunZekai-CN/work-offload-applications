@@ -102,16 +102,15 @@ if __name__ == '__main__':
             if len(img.shape) == 3:
                 img = img[None]  # expand for batch dim
             time_ckp_1 = time.time()
-            img = torch.div(img,255.0)
-            # out = model(img, augment=True, kp_flip=data['kp_flip'], scales=data['scales'], flips=data['flips'])[0]
-            print("device: ",next(model.parameters()).device)
+            out = model(img, augment=True, kp_flip=data['kp_flip'], scales=data['scales'], flips=data['flips'])[0]
+            # print("device: ",next(model.parameters()).device)
             time_ckp_2 = time.time()
             i += 1
 
             total_inf_time += time_ckp_2 - time_ckp_1
             total_running_time += time_ckp_2 - time_ckp_0
-            print(f"T_robot : {time_ckp_2 - time_ckp_1}, average :{total_inf_time/i} (GPU computation time on robot)")
-            print(f"Service time : {time_ckp_2 - time_ckp_0}, average :{total_running_time/i}")
+            print(f"T_robot : {time_ckp_2 - time_ckp_1} ms, average :{total_inf_time/i} ms (GPU computation time on robot)")
+            print(f"Service time : {time_ckp_2 - time_ckp_0} ms, average :{total_running_time/i} ms")
             continue
             person_dets, kp_dets = run_nms(data, out)
             if(len(person_dets[0])==0):
