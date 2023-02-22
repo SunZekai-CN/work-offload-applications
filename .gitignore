@@ -1,2 +1,11 @@
 *.pyc
-/kapao/GPUoffload_test/input/
+# /kapao/GPUoffload_test/input/
+/kapao/GPUoffload_test/saved_model
+/calvin/GPUoffload_test/saved_obs/
+/nice-slam/GPUoffload_test/saved_obs/
+/stylemesh/GPUoffload_test/saved_obs/
+kapao/*.pt
+calvin/data
+calvin/runs
+stylemesh/data/scannet
+stylemesh/dat

@@ -1,0 +1,16 @@
+numpy
+matplotlib
+overboard
+einops
+torch-scatter
+numba
+tensorboard
+pytorch
+torchvision
+torchaudio
+cudatoolkit=11.3 -c pytorch
+pyglet==1.5
+pandas
+mat4py
+opencv-contrib-python
+scipy
