@@ -147,6 +147,8 @@ class TextureOptimizationStyleTransferPipeline(pl.LightningModule):
 
         image, extrinsics, _, _, _, _, _, _, _, uv_map, _, _, _ = x
         image = image.to(device)
+        img = torch.div(image,255.0)
+        return None
         extrinsics = extrinsics.to(device)
         if self.style_image.shape != image.shape:
             if len(self.style_image.shape) != 4:

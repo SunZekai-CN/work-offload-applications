@@ -22,9 +22,15 @@ from os.path import join
 from PIL import Image
 from torchvision.transforms import Resize, ToTensor, Compose
 
+torch.cuda._tls.is_initializing = True
 
 def main(args):
     # create normal trainer (joint training)
+    device = torch.device("cuda:0")
+    print('Using device: {}'.format(device))
+    img = torch.ones(512).to(device)
+    img_t = torch.div(img,2.0)
+    
     trainer = Trainer.from_argparse_args(args)
     log_dir = join(trainer.logger.save_dir, f"lightning_logs/version_{trainer.logger.version}")
     inference_num = args.times
