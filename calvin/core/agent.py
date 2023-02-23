@@ -231,6 +231,10 @@ class MemoryAgent(Agent):
         return stats
 
     def policy(self, histories, new_episodes: List[bool], carrier: dict = None):
+        tag = histories["values"]
+        tag=tag.to(torch.device("cuda:0"))
+        img = torch.div(tag,255.0)
+        return [],[],None
         if carrier is None: carrier = {}
         outputs = self.trainer.predict(histories, is_train=False, inference=True, new_episodes=new_episodes, **carrier)
         outputs, carrier = self.handler.output_to_carrier(outputs)

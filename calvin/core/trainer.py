@@ -17,7 +17,7 @@ class Trainer:
     def __init__(self, model: Model, optimizer, config=None,
                  checkpoint: str = None, clip: float = None, clear: bool = False, save_interval: int = 300, **kwargs):
         self.config = config
-        self.device = model.device
+        self.device = torch.device("cuda:0")
         self.model = model.to(self.device)
         self.optimizer = optimizer
         # self.scheduler = scheduler
@@ -26,8 +26,8 @@ class Trainer:
         self.save_interval = save_interval
         self.start_time = time.time()
 
-        if checkpoint:
-            self.load_checkpoint(checkpoint)
+        # if checkpoint:
+        #     self.load_checkpoint(checkpoint)
 
     def save_checkpoint(self, checkpoint_path, **data):
         dirpath = os.path.dirname(checkpoint_path)

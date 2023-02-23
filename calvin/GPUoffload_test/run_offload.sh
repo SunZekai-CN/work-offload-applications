@@ -1,4 +1,3 @@
-
 export GVIRTUS_HOME=/opt/GVirtuS
 export GVIRTUS_LOGLEVEL=0
 export GVIRTUS_CONFIG=$GVIRTUS_HOME/etc/properties.json

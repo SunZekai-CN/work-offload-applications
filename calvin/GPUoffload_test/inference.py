@@ -5,7 +5,7 @@ import shutil
 import sys
 import random
 import torch
-
+torch.cuda._tls.is_initializing = True
 sys.path.append(".")
 
 import time
@@ -73,6 +73,7 @@ def eval_agent(data=None, name=None, checkpoint=None, n_envs=None, n_evals=None,
     idx = list(range(n_evals))
     random.shuffle(idx)
     for i in range(n_evals):
+        print(f"processing {i + 1} / {n_evals}")
         running_start_time = time.time()
         file_path = f"GPUoffload_test/saved_obs/{idx[i]}/histories.pkl"
         with open(file_path, 'rb') as file:
@@ -86,7 +87,6 @@ def eval_agent(data=None, name=None, checkpoint=None, n_envs=None, n_evals=None,
         _, _, _ = agent.policy(histories, new_episodes, None)
         end_time = time.time()
         
-        print(f"processing {i + 1} / {n_evals}")
         total_inf_time += (end_time - inf_start_time)
         total_running_time += (end_time - running_start_time)
         print(f"T_robot : {(end_time - inf_start_time)*1000:.2f} ms, average :{total_inf_time/(i+1)*1000:.2f} ms (GPU computation time on robot)")
@@ -107,6 +107,9 @@ def add_eval_args(parser):
 
 def main():
     # Parsing training parameters
+    device = torch.device("cuda:0")
+    img = torch.ones(512).to(device)
+    img_t = torch.div(img,2.0)
     parser = argparse.ArgumentParser()
     add_eval_args(parser)
     config = vars(parser.parse_args())

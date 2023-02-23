@@ -59,7 +59,8 @@ def setup_trainer(data=None, device="cuda", checkpoint=None, clip=None, **config
     model_config = factory.model_config(dict(config), **env_config)
     model_config['device'] = device
 
-    model, optimizer = create_model(**model_config)
+    # model, optimizer = create_model(**model_config)
+    model, optimizer = torch.ones(512),None
     print(model_config)
 
     meta = factory.meta(**env_config)
