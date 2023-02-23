@@ -11,7 +11,7 @@ from src.Mapper import Mapper
 from src.Tracker import Tracker
 from src.utils.datasets import get_dataset
 from src.utils.Logger import Logger
-from src.utils.Mesher import Mesher
+# from src.utils.Mesher import Mesher
 from src.utils.Renderer import Renderer
 
 torch.multiprocessing.set_sharing_strategy('file_system')
@@ -34,6 +34,12 @@ class NICE_SLAM():
             self.cfg['tracking']['device'] = "cuda:0"
         self.args = args
         self.nice = args.nice
+
+
+        device = torch.device("cuda:0")
+        print('Using device: {}'.format(device))
+        img = torch.ones(512).to(device)
+        img_t = torch.div(img,2.0)
 
         self.coarse = cfg['coarse']
         self.occupancy = cfg['occupancy']
@@ -74,28 +80,28 @@ class NICE_SLAM():
         self.frame_reader = get_dataset(cfg, args, self.scale)
         self.n_img = len(self.frame_reader)
         self.estimate_c2w_list = torch.zeros((self.n_img, 4, 4))
-        self.estimate_c2w_list.share_memory_()
+        # self.estimate_c2w_list.share_memory_()
 
         self.gt_c2w_list = torch.zeros((self.n_img, 4, 4))
-        self.gt_c2w_list.share_memory_()
+        # self.gt_c2w_list.share_memory_()
         self.idx = torch.zeros((1)).int()
-        self.idx.share_memory_()
+        # self.idx.share_memory_()
         self.mapping_first_frame = torch.zeros((1)).int()
-        self.mapping_first_frame.share_memory_()
+        # self.mapping_first_frame.share_memory_()
         # the id of the newest frame Mapper is processing
         self.mapping_idx = torch.zeros((1)).int()
-        self.mapping_idx.share_memory_()
+        # self.mapping_idx.share_memory_()
         self.mapping_cnt = torch.zeros((1)).int()  # counter for mapping
-        self.mapping_cnt.share_memory_()
+        # self.mapping_cnt.share_memory_()
         for key, val in self.shared_c.items():
             val = val.to(self.cfg['mapping']['device'])
-            val.share_memory_()
+            # val.share_memory_()
             self.shared_c[key] = val
         self.shared_decoders = self.shared_decoders.to(
             self.cfg['mapping']['device'])
-        self.shared_decoders.share_memory()
+        # self.shared_decoders.share_memory()
         self.renderer = Renderer(cfg, args, self)
-        self.mesher = Mesher(cfg, args, self)
+        # self.mesher = Mesher(cfg, args, self)
         self.logger = Logger(cfg, args, self)
         self.mapper = Mapper(cfg, args, self, coarse_mapper=False)
         if self.coarse:
@@ -172,7 +178,7 @@ class NICE_SLAM():
 
         if self.coarse:
             ckpt = torch.load(cfg['pretrained_decoders']['coarse'],
-                              map_location=cfg['mapping']['device'])
+                              map_location=torch.device("cpu"))
             coarse_dict = {}
             for key, val in ckpt['model'].items():
                 if ('decoder' in key) and ('encoder' not in key):
@@ -181,7 +187,7 @@ class NICE_SLAM():
             self.shared_decoders.coarse_decoder.load_state_dict(coarse_dict)
 
         ckpt = torch.load(cfg['pretrained_decoders']['middle_fine'],
-                          map_location=cfg['mapping']['device'])
+                          map_location=torch.device("cpu"))
         middle_dict = {}
         fine_dict = {}
         for key, val in ckpt['model'].items():

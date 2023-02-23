@@ -29,7 +29,7 @@ class Tracker(object):
         self.idx = slam.idx
         self.nice = slam.nice
         self.bound = slam.bound
-        self.mesher = slam.mesher
+        # self.mesher = slam.mesher
         self.output = slam.output
         self.verbose = slam.verbose
         self.shared_c = slam.shared_c

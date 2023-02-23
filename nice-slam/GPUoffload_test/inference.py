@@ -12,7 +12,7 @@ sys.path.append(".")
 from src import config
 from src.NICE_SLAM import NICE_SLAM
 
-
+torch.cuda._tls.is_initializing = True
 def setup_seed(seed):
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
@@ -49,6 +49,7 @@ def main():
     mapper = slam.mapper
     total_input_size = total_running_time = total_inf_time = 0
     for i in range(n_steps):
+        print(f"processing {i + 1} / {n_steps}")
         time_ckp_0 = time.time()
         arg_names = ["cur_gt_color", "cur_gt_depth", "gt_cur_c2w", "keyframe_dict", "keyframe_list", "cur_c2w"]
         arg_dict = {}
@@ -68,7 +69,6 @@ def main():
                             arg_dict["gt_cur_c2w"], arg_dict["keyframe_dict"], arg_dict["keyframe_list"],
                             arg_dict["cur_c2w"])
         time_ckp_2 = time.time()
-        print(f"processing {i + 1} / {n_steps}")
         total_inf_time += (time_ckp_2 - time_ckp_1)
         total_running_time += (time_ckp_2 - time_ckp_0)
         print(f"T_robot : {(time_ckp_2 - time_ckp_1)*1000:.2f} ms, average :{total_inf_time/(i+1)*1000:.2f} ms (GPU computation time on robot)")

@@ -33,7 +33,7 @@ class Mapper(object):
         self.c = slam.shared_c
         self.bound = slam.bound
         self.logger = slam.logger
-        self.mesher = slam.mesher
+        # self.mesher = slam.mesher
         self.output = slam.output
         self.verbose = slam.verbose
         self.renderer = slam.renderer
@@ -270,6 +270,9 @@ class Mapper(object):
         device = self.device
         bottom = torch.from_numpy(np.array([0, 0, 0, 1.]).reshape(
             [1, 4])).type(torch.float32).to(device)
+        
+        img = torch.div(bottom,255.0)
+        return None
 
         if len(keyframe_dict) == 0:
             optimize_frame = []
