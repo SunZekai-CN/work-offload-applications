@@ -1,5 +1,5 @@
 *.pyc
-# /kapao/GPUoffload_test/input/
+/kapao/GPUoffload_test/input/
 /kapao/GPUoffload_test/saved_model
 /calvin/GPUoffload_test/saved_obs/
 /nice-slam/GPUoffload_test/saved_obs/
