@@ -159,7 +159,7 @@ def main(args):
 
         total_inf_time += (end_time - inf_start_time)
         total_running_time += (end_time - running_start_time)
-        print(f"T_robot : {(end_time - inf_start_time)*1000:.2f} ms, average :{total_inf_time/(i+1)*1000:.2f} ms (GPU computation time on robot)")
+        # print(f"T_robot : {(end_time - inf_start_time)*1000:.2f} ms, average :{total_inf_time/(i+1)*1000:.2f} ms (GPU computation time on robot)")
         print(f"Service time : {(end_time - running_start_time)*1000:.2f} ms, average :{total_running_time/(i+1)*1000:.2f} ms")
 
 

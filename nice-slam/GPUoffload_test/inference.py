@@ -71,7 +71,7 @@ def main():
         time_ckp_2 = time.time()
         total_inf_time += (time_ckp_2 - time_ckp_1)
         total_running_time += (time_ckp_2 - time_ckp_0)
-        print(f"T_robot : {(time_ckp_2 - time_ckp_1)*1000:.2f} ms, average :{total_inf_time/(i+1)*1000:.2f} ms (GPU computation time on robot)")
+        # print(f"T_robot : {(time_ckp_2 - time_ckp_1)*1000:.2f} ms, average :{total_inf_time/(i+1)*1000:.2f} ms (GPU computation time on robot)")
         print(f"Service time : {(time_ckp_2 - time_ckp_0)*1000:.2f} ms, average :{total_running_time/(i+1)*1000:.2f} ms")
 
 
