@@ -10,7 +10,7 @@ RUN python3 -m pip install --upgrade pip
 RUN pip3 install matplotlib numpy Pillow PyYAML scipy tqdm gdown tensorboard seaborn pandas
 RUN pip3 install Cython pycocotools thop pytube imageio
 
-RUN apt-get install -y build-essential libxmu-dev libxi-dev libgl-dev libosmesa-dev liblog4cplus-dev curl
+RUN apt-get install -y build-essential libxmu-dev libxi-dev libgl-dev libosmesa-dev liblog4cplus-dev curl liblz4-dev libiberty-dev
 WORKDIR /home
 RUN git clone https://github.com/SunZekai-CN/transparent_offload_cuda.git
 RUN cd transparent_offload_cuda && mkdir build && cd build && export GVIRTUS_HOME=/opt/GVirtuS && cmake .. && make && make install
